@@ -25,6 +25,7 @@ public class TestServiceImpl implements TestService {
     private final TestUtils testUtils;
 
     public TestServiceImpl(YeastsRepository yeastsRepository, CrystalsRepository crystalsRepository, TestRepository testRepository, TestUtils testUtils) {
+        log.debug("TestServiceImpl constructor called");
         this.yeastsRepository = yeastsRepository;
         this.crystalsRepository = crystalsRepository;
         this.testRepository = testRepository;
@@ -48,13 +49,14 @@ public class TestServiceImpl implements TestService {
 
     @Override
     public Page<Test> getAllTests(Pageable pageable) {
+        log.info("getAllTests called with pageable: {}", pageable);
         Page<Crystals> crystalsPage = crystalsRepository.findAll(pageable);
         Page<Yeasts> yeastsPage = yeastsRepository.findAll(pageable);
 
         List<Test> testList = new ArrayList<>();
         testList.addAll(crystalsPage.getContent());
         testList.addAll(yeastsPage.getContent());
-
+        log.info("getAllTests returning {} tests", testList.size());
         return new PageImpl<>(testList, pageable, crystalsPage.getTotalElements() + yeastsPage.getTotalElements());
     }
 
