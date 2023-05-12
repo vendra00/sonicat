@@ -6,6 +6,7 @@ import com.test.sonicat.model.Yeasts;
 import com.test.sonicat.repository.CrystalsRepository;
 import com.test.sonicat.repository.TestRepository;
 import com.test.sonicat.repository.YeastsRepository;
+import com.test.sonicat.service.util.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -21,24 +22,28 @@ public class TestServiceImpl implements TestService {
     private final YeastsRepository yeastsRepository;
     private final CrystalsRepository crystalsRepository;
     private final TestRepository testRepository;
+    private final TestUtils testUtils;
 
-    public TestServiceImpl(YeastsRepository yeastsRepository, CrystalsRepository crystalsRepository, TestRepository testRepository) {
+    public TestServiceImpl(YeastsRepository yeastsRepository, CrystalsRepository crystalsRepository, TestRepository testRepository, TestUtils testUtils) {
         this.yeastsRepository = yeastsRepository;
         this.crystalsRepository = crystalsRepository;
         this.testRepository = testRepository;
+        this.testUtils = testUtils;
     }
 
     @Override
     public Yeasts createYeastsTest(Yeasts yeasts) {
         log.info("createYeastsTest called with yeasts: {}", yeasts);
+        yeasts.setIdentifier(testUtils.generateIdentifier("yeasts"));
         yeasts.setYeastsConcentration(((float) yeasts.getNumberYeasts() / 100) * 0.000091f);
-        return yeastsRepository.insert(yeasts);
+        return testRepository.insert(yeasts);
     }
 
     @Override
     public Crystals createCrystalsTest(Crystals crystals) {
         log.info("createCrystalsTest called with crystals: {}", crystals);
-        return crystalsRepository.insert(crystals);
+        crystals.setIdentifier(testUtils.generateIdentifier("crystals"));
+        return testRepository.insert(crystals);
     }
 
     @Override
