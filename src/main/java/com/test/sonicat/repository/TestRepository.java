@@ -10,5 +10,4 @@ import java.util.List;
 
 public interface TestRepository extends MongoRepository<Test, Long> {
     @NonNull Page<Test> findAll(@NonNull Pageable pageable);
-    List<Test> findByIdentifierStartingWith(String prefix);
 }
