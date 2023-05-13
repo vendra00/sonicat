@@ -27,8 +27,12 @@ public class TestController {
         return testService.createCrystalsTest(crystals);
     }
     @GetMapping("/tests")
-    public Page<Test> getAllTests(Pageable pageable) {
-        return testService.getAllTests(pageable);
+    public Page<Test> getAllTests(Pageable pageable, @RequestParam(required = false) String testType) {
+        return testService.getAllTests(pageable, testType);
+    }
+    @DeleteMapping("/tests")
+    public void deleteAllTests() {
+        testService.deleteAllTests();
     }
 }
 

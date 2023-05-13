@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 public interface TestService {
     Yeasts createYeastsTest(Yeasts yeasts);
     Crystals createCrystalsTest(Crystals crystals);
-    Page<Test> getAllTests(Pageable pageable);
+    Page<Test> getAllTests(Pageable pageable, String testType);
+    void deleteAllTests();
 }
 

@@ -10,7 +10,6 @@ import java.util.regex.Pattern;
 
 @Slf4j
 public class TestValidator {
-
     private static final Pattern SPECIAL_CHARACTERS_PATTERN = Pattern.compile("[!@#$%^&*(),.?\":{}|<>]");
     private static final int MAX_TEST_NAME_LENGTH = 30;
 
@@ -43,21 +42,17 @@ public class TestValidator {
             log.error("Error creating test: Test name is required.");
             throw new ValidationException("Test name is required.");
         }
-
         if (test.getType().isEmpty()) {
             log.error("Error creating test: Test type is required.");
             throw new ValidationException("Test type is required.");
         }
-
         if (test.getName().length() > MAX_TEST_NAME_LENGTH) {
             log.error("Error creating test: Test name exceeds maximum length of {} characters.", MAX_TEST_NAME_LENGTH);
             throw new ValidationException("Test name exceeds maximum length of " + MAX_TEST_NAME_LENGTH + " characters.");
         }
-
         if (SPECIAL_CHARACTERS_PATTERN.matcher(test.getName()).find()) {
             log.error("Error creating test: Test name contains special characters.");
             throw new ValidationException("Test name cannot contain special characters.");
         }
-
     }
 }

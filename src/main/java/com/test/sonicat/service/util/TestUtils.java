@@ -7,6 +7,7 @@ import com.test.sonicat.repository.CrystalsRepository;
 import com.test.sonicat.repository.YeastsRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.text.DecimalFormat;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.test.sonicat.model.TestType.CRYSTALS;
+import static com.test.sonicat.model.TestType.YEASTS;
 
 @Slf4j
 @Component
@@ -34,14 +36,12 @@ public class TestUtils {
 
         List<Test> tests = new ArrayList<>();
 
-        if(Objects.equals(prefix, CRYSTALS.getPrefix())){
-            List<Crystals> crystalTestsList = crystalsRepository.findAll();
-            tests.addAll(crystalTestsList);
-        } else {
-            List<Yeasts> yeastsTestsList = yeastsRepository.findAll();
-            tests.addAll(yeastsTestsList);
-        }
+        checkTestType(prefix, tests);
 
+        return applyIdentifier(prefix, tests);
+    }
+
+    private static String applyIdentifier(String prefix, List<Test> tests) {
         if (!tests.isEmpty()) {
             log.debug("generateIdentifier found {} tests with prefix {}", tests.size(), prefix);
             String latestIdentifier = tests.get(tests.size() - 1).getIdentifier();
@@ -54,11 +54,39 @@ public class TestUtils {
         }
     }
 
+    private void checkTestType(String prefix, List<Test> tests) {
+        if(Objects.equals(prefix, CRYSTALS.getPrefix())){
+            List<Crystals> crystalTestsList = crystalsRepository.findAll();
+            tests.addAll(crystalTestsList);
+        } else {
+            List<Yeasts> yeastsTestsList = yeastsRepository.findAll();
+            tests.addAll(yeastsTestsList);
+        }
+    }
+
     public List<Test> prepareTestList(Page<Crystals> crystalsPage, Page<Yeasts> yeastsPage) {
         List<Test> testList = new ArrayList<>();
-        testList.addAll(crystalsPage.getContent());
-        testList.addAll(yeastsPage.getContent());
+        if (crystalsPage != null) {
+            testList.addAll(crystalsPage.getContent());
+        }
+        if (yeastsPage != null) {
+            testList.addAll(yeastsPage.getContent());
+        }
         return testList;
+    }
+
+    public List<Test> fetchTestsByType(Pageable pageable, String testType) {
+        Page<Crystals> crystalsPage = null;
+        Page<Yeasts> yeastsPage = null;
+        if (CRYSTALS.name().equalsIgnoreCase(testType)) {
+            crystalsPage = crystalsRepository.findAll(pageable);
+        } else if (YEASTS.name().equalsIgnoreCase(testType)) {
+            yeastsPage = yeastsRepository.findAll(pageable);
+        } else {
+            crystalsPage = crystalsRepository.findAll(pageable);
+            yeastsPage = yeastsRepository.findAll(pageable);
+        }
+        return prepareTestList(crystalsPage, yeastsPage);
     }
 
     public float applyYeastConcentrationFormula(Yeasts yeasts) {
