@@ -6,6 +6,7 @@ import com.test.sonicat.model.Yeasts;
 import com.test.sonicat.repository.CrystalsRepository;
 import com.test.sonicat.repository.YeastsRepository;
 import com.test.sonicat.service.util.TestUtils;
+import com.test.sonicat.service.validations.TestValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -33,27 +34,20 @@ public class TestServiceImpl implements TestService {
 
     @Override
     public Yeasts createYeastsTest(Yeasts yeasts) {
-        try {
-            log.info("createYeastsTest called with yeasts: {}", yeasts);
-            yeasts.setIdentifier(testUtils.generateIdentifier(YEASTS.getPrefix()));
-            yeasts.setYeastsConcentration(((float) yeasts.getNumberYeasts() / 100) * 0.000091f);
-            return yeastsRepository.insert(yeasts);
-        } catch (Exception e) {
-            log.error("Error creating yeasts test: {}", e.getMessage());
-            throw new RuntimeException("Failed to create yeasts test");
-        }
+        log.info("createYeastsTest called with yeasts: {}", yeasts);
+        yeasts.setIdentifier(testUtils.generateIdentifier(YEASTS.getPrefix()));
+        TestValidator.validateYeasts(yeasts);
+        yeasts.setYeastsConcentration(testUtils.applyYeastConcentrationFormula(yeasts));
+        return yeastsRepository.insert(yeasts);
     }
 
     @Override
     public Crystals createCrystalsTest(Crystals crystals) {
-        try {
-            log.info("createCrystalsTest called with crystals: {}", crystals);
-            crystals.setIdentifier(testUtils.generateIdentifier(CRYSTALS.getPrefix()));
-            return crystalsRepository.insert(crystals);
-        } catch (Exception e) {
-            log.error("Error creating crystals test: {}", e.getMessage());
-            throw new RuntimeException("Failed to create crystals test");
-        }
+
+        log.info("createCrystalsTest called with crystals: {}", crystals);
+        crystals.setIdentifier(testUtils.generateIdentifier(CRYSTALS.getPrefix()));
+        TestValidator.validateCrystals(crystals);
+        return crystalsRepository.insert(crystals);
     }
 
     @Override

@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -20,6 +21,7 @@ import static com.test.sonicat.model.TestType.CRYSTALS;
 public class TestUtils {
     private final CrystalsRepository crystalsRepository;
     private final YeastsRepository yeastsRepository;
+    private static final DecimalFormat CONCENTRATION_FORMATTER = new DecimalFormat("#.###############");
 
     public TestUtils(CrystalsRepository crystalsRepository, YeastsRepository yeastsRepository) {
         log.debug("TestUtils constructor called");
@@ -58,5 +60,11 @@ public class TestUtils {
         testList.addAll(yeastsPage.getContent());
         return testList;
     }
+
+    public float applyYeastConcentrationFormula(Yeasts yeasts) {
+        float concentration = ((float) yeasts.getNumberYeasts() / 100) * 0.000091f;
+        return Float.parseFloat(CONCENTRATION_FORMATTER.format(concentration));
+    }
+
 }
 
